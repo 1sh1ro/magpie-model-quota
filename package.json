@@ -1,0 +1,53 @@
+{
+  "name": "magpie-model-quota",
+  "version": "0.1.0",
+  "description": "A magpie page that estimates how many tokens each model has left across all of your accounts and providers, from the local usage history.",
+  "type": "module",
+  "main": "./index.mjs",
+  "exports": "./index.mjs",
+  "files": [
+    "index.mjs",
+    "lib",
+    "page",
+    "ui",
+    "assets",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "magpie",
+    "magpie-plugin",
+    "magpie-page",
+    "opencode",
+    "opencode-plugin",
+    "quota",
+    "usage",
+    "tokens"
+  ],
+  "license": "MIT",
+  "magpie": {
+    "name": "Model Quota",
+    "summary": {
+      "en": "Estimate how many tokens each model has left, merged across every account and provider, from your local usage history.",
+      "zh": "用本地用量历史，把所有账号、所有供应商的额度换成 token，按模型合并估算还剩多少。"
+    },
+    "icon": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M14 22h36M14 32h36M14 42h22'/%3E%3C/g%3E%3C/svg%3E",
+    "page": {
+      "title": "Model Quota",
+      "titles": {
+        "zh": "模型剩余额度",
+        "zh-TW": "模型剩餘額度",
+        "en": "Model Quota"
+      },
+      "file": "page/index.html",
+      "icon": "assets/icon.svg",
+      "service": {
+        "port": 3491,
+        "option": "port"
+      }
+    },
+    "options": {
+      "port": 3491
+    }
+  }
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模型剩余额度</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div class="title">
+      <h1>模型剩余额度</h1>
+      <p class="sub">把所有账号、所有供应商的额度窗口换算成 token，按模型合并</p>
+    </div>
+    <div class="actions">
+      <span id="stamp" class="stamp"></span>
+      <button id="refresh" type="button" title="重新估算">刷新</button>
+    </div>
+  </header>
+
+  <section class="cards">
+    <div class="card">
+      <div class="card-label">合计剩余</div>
+      <div class="card-value" id="total">—</div>
+      <div class="card-note" id="total-note"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">覆盖模型</div>
+      <div class="card-value" id="modelCount">—</div>
+      <div class="card-note">有可估算额度窗口的模型</div>
+    </div>
+    <div class="card">
+      <div class="card-label">覆盖额度池</div>
+      <div class="card-value" id="poolCount">—</div>
+      <div class="card-note" id="pool-note"></div>
+    </div>
+  </section>
+
+  <section class="table-wrap">
+    <table class="grid">
+      <thead>
+        <tr>
+          <th class="col-model">模型</th>
+          <th class="num">剩余 token</th>
+          <th class="num">占比</th>
+          <th class="num">日均消耗</th>
+          <th class="num">预计可用</th>
+          <th class="num">池数</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div id="empty" class="empty" hidden></div>
+  </section>
+
+  <h2 class="section-title">额度窗口</h2>
+  <section class="table-wrap">
+    <table class="grid">
+      <thead>
+        <tr>
+          <th class="col-model">窗口</th>
+          <th class="num">剩余</th>
+          <th class="num">每 1% 约合</th>
+          <th class="num">剩余 token</th>
+          <th class="num">本轮已用</th>
+          <th class="num">本轮记录</th>
+          <th>重置</th>
+        </tr>
+      </thead>
+      <tbody id="poolRows"></tbody>
+    </table>
+    <div id="poolEmpty" class="empty" hidden></div>
+  </section>
+
+  <footer class="foot">
+    <p id="note"></p>
+  </footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

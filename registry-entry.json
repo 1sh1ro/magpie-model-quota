@@ -1,0 +1,10 @@
+{
+  "package": "magpie-model-quota",
+  "kind": "page",
+  "name": "Model Quota",
+  "icon": "https://raw.githubusercontent.com/<owner>/magpie-model-quota/main/assets/icon.svg",
+  "summary": {
+    "en": "Estimate how many tokens each model has left, merged across every account and provider.",
+    "zh": "把所有账号、所有供应商的额度换成 token，按模型合并估算还剩多少。"
+  }
+}
