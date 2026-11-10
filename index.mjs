@@ -7,12 +7,12 @@ let starting = null
 
 export default {
   id: "magpie-model-quota",
-  server: async (_input, options) => {
+  server: async (input, options) => {
     if (!starting) {
       // manifest options.port 的 0/非法值归成 undefined：页面从同一份 options 读到的与这里一致。
       const n = Number(options?.port)
       const port = Number.isInteger(n) && n > 0 && n < 65536 ? n : undefined
-      starting = startServer({ options: { ...(options || {}), port } })
+      starting = startServer({ options: { ...(options || {}), port, configDir: input?.directory } })
         .then((srv) => ({ ok: true, port: srv.port, reused: srv.reused }))
         .catch((err) => {
           starting = null // 允许下次调用重试

@@ -1,6 +1,6 @@
 {
   "name": "magpie-model-quota",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A magpie page that estimates how many tokens each model has left across all of your accounts and providers, from the local usage history.",
   "type": "module",
   "main": "./index.mjs",

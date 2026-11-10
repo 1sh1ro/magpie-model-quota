@@ -59,7 +59,7 @@ Token count means input + output + cache read + cache write + reasoning.
 
 ## Security
 
-The page service binds loopback only. Every `/api` route except `/api/ping` requires a per-run key that is injected into the HTML this instance serves; a request with a cross-origin `Origin` (including `Origin: null` from a sandboxed iframe) is refused. Another local page therefore cannot read your quota report. There is no telemetry, and the only request the service makes is to the local magpie gateway.
+The page service binds `127.0.0.1` only. Every `/api` route except `/api/ping` requires a key generated fresh at each start and injected into the HTML this instance serves. The HTML is returned only to navigation requests, so another page cannot fetch it to read the key. Requests from another origin are refused; a sandboxed frame's `Origin: null` is accepted only together with the key. There is no telemetry, and the only request the service makes is to the local magpie gateway.
 
 ## Options
 
