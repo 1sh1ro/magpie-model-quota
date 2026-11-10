@@ -191,7 +191,9 @@ async function load(force, attempt = 0) {
       try {
         if (!sessionStorage.getItem("mq-reload")) {
           sessionStorage.setItem("mq-reload", "1")
-          location.reload()
+          const u = new URL(location.href)
+          u.searchParams.set("_r", String(Date.now()))
+          location.replace(u.href)
           return
         }
       } catch {}
