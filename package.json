@@ -25,6 +25,10 @@
     "tokens"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1sh1ro/magpie-model-quota.git"
+  },
   "magpie": {
     "name": "Model Quota",
     "summary": {
