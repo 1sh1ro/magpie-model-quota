@@ -1,7 +1,7 @@
 // 带路页：把 magpie 的插件框架导航到本插件的页面服务。
 // 页面 CSP 是 connect-src 'none'，只能直接跳转，不能先探测。
 (async () => {
-  const DEFAULT_PORT = 3491
+  const DEFAULT_PORT = 3497
   let port = DEFAULT_PORT
   let theme = ""
   let tokens = null

@@ -57,12 +57,16 @@ Token count means input + output + cache read + cache write + reasoning.
 - Accounts whose requests bypass magpie (for example Codex with `keepLogin` / switch-only, which talks to OpenAI directly) leave no per-request rows in `usage.jsonl`. Their windows can still show a percentage, but the token estimate has to come from older complete rounds, or is skipped.
 - The estimate is extrapolated from history. A change in usage structure (longer sessions, different cache hit rate) shifts the result.
 
+## Security
+
+The page service binds loopback only. Every `/api` route except `/api/ping` requires a per-run key that is injected into the HTML this instance serves; a request with a cross-origin `Origin` (including `Origin: null` from a sandboxed iframe) is refused. Another local page therefore cannot read your quota report. There is no telemetry, and the only request the service makes is to the local magpie gateway.
+
 ## Options
 
-The page service listens on `127.0.0.1:3491` by default. If that port is taken, set another one in the plugin's options:
+The page service listens on `127.0.0.1:3497` by default. If that port is taken, set another one in the plugin's options:
 
 ```json
-{ "port": 3491 }
+{ "port": 3497 }
 ```
 
 ## Development

@@ -3,6 +3,7 @@ const qs = new URLSearchParams(location.search)
 const theme = qs.get("theme")
 if (theme === "dark" || theme === "light") document.documentElement.dataset.theme = theme
 
+const KEY = document.querySelector('meta[name="magpie-quota-key"]')?.content || ""
 const expanded = new Set()
 
 const $ = (id) => document.getElementById(id)
@@ -167,6 +168,7 @@ async function load(force, attempt = 0) {
   try {
     const res = await fetch("/api/report" + (force ? "?force=1" : ""), {
       method: force ? "POST" : "GET",
+      headers: { "x-magpie-quota-key": KEY },
     })
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
@@ -174,6 +176,16 @@ async function load(force, attempt = 0) {
     }
     render(await res.json())
   } catch (err) {
+    // 宿主重启后旧页面手里的口令会失效：重新载入一次拿新口令
+    if (err.message && /unauthorized/i.test(err.message)) {
+      try {
+        if (!sessionStorage.getItem("mq-reload")) {
+          sessionStorage.setItem("mq-reload", "1")
+          location.reload()
+          return
+        }
+      } catch {}
+    }
     // 服务正在重启、暂时连不上：稍等再试（magpie 重启插件宿主时会有几秒空白）
     if (attempt < 20) {
       await new Promise((r) => setTimeout(r, 1000))
