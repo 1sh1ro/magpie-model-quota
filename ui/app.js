@@ -1,4 +1,4 @@
-// 页面逻辑：读 /api/report，渲染按模型汇总的剩余 token。
+// 页面逻辑：读 api/report，渲染按模型汇总的剩余 token。
 const qs = new URLSearchParams(location.search)
 const theme = qs.get("theme")
 if (theme === "dark" || theme === "light") document.documentElement.dataset.theme = theme
@@ -76,7 +76,7 @@ function render(report) {
     tdDays.textContent = fmtDays(m.days)
     if (m.days != null && m.days < 1) tdDays.classList.add("warn")
     tr.appendChild(tdDays)
-    tr.appendChild(el("td", "num", String(m.pools.length)))
+    tr.appendChild(el("td", "num", String((m.pools || []).length)))
 
     tr.addEventListener("click", () => {
       if (expanded.has(m.id)) expanded.delete(m.id)
@@ -100,7 +100,7 @@ function render(report) {
       thead.appendChild(head)
       table.appendChild(thead)
       const tb = el("tbody")
-      for (const p of m.pools) {
+      for (const p of m.pools || []) {
         const r = el("tr")
         r.appendChild(el("td", null, p.pool))
         r.appendChild(el("td", "num", fmtTokens(p.tokens)))
@@ -116,7 +116,6 @@ function render(report) {
     }
   }
 
-  // 额度窗口表
   const pbody = $("poolRows")
   pbody.innerHTML = ""
   const pools = (report.pools || []).slice().sort((a, b) => b.tokens - a.tokens)
@@ -148,7 +147,7 @@ function render(report) {
   const lowConf = (report.pools || []).filter((p) => p.lowConfidence).length
   const skipped = []
   if (blocked) skipped.push(blocked + " 个窗口已用完，所在账号不计入")
-  if (lowConf) skipped.push(lowConf + " 个窗口记录不足，只给百分比、不折算 token")
+  if (lowConf) skipped.push(lowConf + " 个窗口记录不足，按历史轮次估算")
   if (s.noHistory) skipped.push(s.noHistory + " 个窗口没有历史读数")
   if (s.noUsage) skipped.push(s.noUsage + " 个窗口没有可对齐的用量记录")
   $("note").innerHTML =
@@ -166,18 +165,29 @@ async function load(force, attempt = 0) {
   btn.disabled = true
   btn.textContent = "刷新中…"
   try {
-    const res = await fetch("/api/report" + (force ? "?force=1" : ""), {
-      method: force ? "POST" : "GET",
-      headers: { "x-magpie-quota-key": KEY },
-    })
+    const query = force ? "?force=1" : ""
+    const init = { method: force ? "POST" : "GET", headers: { "x-magpie-quota-key": KEY } }
+    // 直接访问时两种写法等价；经 magpie 的 service 代理、页面挂在子路径下时，
+    // 只有相对路径会带上代理前缀，所以先用相对路径，404 再退回根路径。
+    let res
+    try {
+      res = await fetch("api/report" + query, init)
+      if (res.status === 404) res = await fetch("/api/report" + query, init)
+    } catch {
+      res = await fetch("/api/report" + query, init)
+    }
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))
-      throw new Error(body.error || "HTTP " + res.status)
+      const e = new Error(body.error || "HTTP " + res.status)
+      e.http = true
+      e.status = res.status
+      throw e
     }
     render(await res.json())
+    try { sessionStorage.removeItem("mq-reload") } catch {}
   } catch (err) {
     // 宿主重启后旧页面手里的口令会失效：重新载入一次拿新口令
-    if (err.message && /unauthorized/i.test(err.message)) {
+    if (err.http && err.status === 401) {
       try {
         if (!sessionStorage.getItem("mq-reload")) {
           sessionStorage.setItem("mq-reload", "1")
@@ -186,8 +196,8 @@ async function load(force, attempt = 0) {
         }
       } catch {}
     }
-    // 服务正在重启、暂时连不上：稍等再试（magpie 重启插件宿主时会有几秒空白）
-    if (attempt < 20) {
+    // 只有网络错误才重试；HTTP 错误直接显示，避免一直停在“正在连接”
+    if (!err.http && attempt < 20) {
       await new Promise((r) => setTimeout(r, 1000))
       if (attempt === 0) $("stamp").textContent = "正在连接服务…"
       return load(force, attempt + 1)

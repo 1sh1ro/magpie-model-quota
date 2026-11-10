@@ -24,6 +24,7 @@
   } catch {}
 
   const q = new URLSearchParams()
+  q.set("_", String(Date.now()))
   if (theme) q.set("theme", theme)
   const slim = {}
   for (const [k, v] of Object.entries(tokens || {})) {
